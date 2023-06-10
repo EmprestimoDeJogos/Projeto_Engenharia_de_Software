@@ -1,6 +1,7 @@
 package br.ufmg.engsoft.emprestimojogos.controller;
 
 import br.ufmg.engsoft.emprestimojogos.domain.Usuario;
+import br.ufmg.engsoft.emprestimojogos.repository.UsuarioBD;
 import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 import br.ufmg.engsoft.emprestimojogos.view.Tela;
 
@@ -19,8 +20,10 @@ public class Controlador {
 
         if(option == 1){
             Tela.mostrarCadastro();
-        } else {
+        } else if(option == 2) {
             Tela.mostrarLogin();
+        } else {
+        	System.exit(0);
         }
     }
 
@@ -35,9 +38,15 @@ public class Controlador {
 
     public static void handleMenuHomeLogado() {
         int option = scanner.nextInt();
-
+        		
         if(option == 1){
             Tela.mostrarCadastrarJogo();
+        } else if (option == 2) {
+        	Tela.mostrarCadastrarEmprestimo();
+        } else if (option == 3) {
+        	Tela.mostrarListagemEmprestimo();
+        } else if (option == 4) {
+        	System.exit(0);
         } else {
             Tela.mostrarErroLogado("Opção não reconhecida!");
         }
@@ -50,10 +59,21 @@ public class Controlador {
             Tela.mostrarErroLogado(ex.getMessage());
         }
     }
+    
+    public static void handleCadastroEmprestimo() {
+        try {
+            formulario.formCadastroEmprestimo();
+        } catch (InputMismatchException ex){
+            Tela.mostrarErroLogado(ex.getMessage());
+        }
+    }
 
     public static void handleLogin() {
         //Código temporário antes de ser feito a tarefa de login
-        GerenciadorSessao.getSessao().setUsuarioLogado(new Usuario("teste@email.com", "Eduardo", "", "123"));
+    	//Lucas - agora pegando usuário a partir do banco de dados mockado (temporário tbm)
+    	
+    	Usuario usuario = UsuarioBD.getInstance().getUsuarios().get(1);
+        GerenciadorSessao.getSessao().setUsuarioLogado(usuario);
         Tela.mostrarHomeLogado();
     }
 }

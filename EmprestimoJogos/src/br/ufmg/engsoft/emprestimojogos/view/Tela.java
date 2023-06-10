@@ -1,9 +1,16 @@
 package br.ufmg.engsoft.emprestimojogos.view;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import br.ufmg.engsoft.emprestimojogos.constants.CoresConsole;
 import br.ufmg.engsoft.emprestimojogos.constants.OpcoesMenu;
 import br.ufmg.engsoft.emprestimojogos.controller.Controlador;
 import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
+import br.ufmg.engsoft.emprestimojogos.domain.*;
+import br.ufmg.engsoft.emprestimojogos.repository.EmprestimoBD;
 
 public class Tela {
 
@@ -84,5 +91,61 @@ public class Tela {
     public static void mostrarCadastrarJogo() {
         mostraSeparadorDeTelas();
         Controlador.handleCadastroJogo();
+        mostrarHomeLogado();
     }
+    
+    public static void mostrarCadastrarEmprestimo() {
+        mostraSeparadorDeTelas();
+        Controlador.handleCadastroEmprestimo();
+        mostrarHomeLogado();
+    }
+    
+    public static void mostrarListagemEmprestimo() {
+        mostraSeparadorDeTelas();
+        showEmprestimosUsuarioLogado();
+        mostrarHomeLogado();
+    }
+    
+    private static void showEmprestimosUsuarioLogado() {
+    	
+    	Usuario usuarioLogado = GerenciadorSessao.getSessao().getUsuarioLogado();
+    	
+    	List<Emprestimo> emprestimosGerais = EmprestimoBD.getInstance().getEmprestimos();
+
+    	List<Emprestimo> emprestimosUsuario = emprestimosGerais
+    										  .stream()
+    										  .filter(emprestimo -> emprestimo
+    												  				.getSolicitante()
+    												  				.getEmail()
+    												  				.equals(usuarioLogado.getEmail()))
+    										  .collect(Collectors.toList());
+    	
+    	if(emprestimosUsuario.isEmpty()) {
+    		System.out.println("Você não possui nenhum empréstimo cadastrado!");
+    	}
+    	
+    	else {
+    		System.out.printf("----------------------------------------%n");
+    		System.out.printf("| Empréstimos cadastrados de %10s|%n", usuarioLogado.getNome());
+    		System.out.printf("----------------------------------------%n");
+    		System.out.printf("| Dono | Jogo solicitado | Data limite |%n");
+    		System.out.printf("----------------------------------------%n");
+    		
+    		for(Emprestimo emprestimo : emprestimosUsuario) {
+    			
+    			String dataFormatada = "";
+    				
+    			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+    			dataFormatada = formatter.format(emprestimo.getDataLimite());	
+    			
+	    	System.out.printf("| %-10s | %-10s | %-10s |%n", emprestimo.getDonoDoJogo().getNome(), 
+	    																		emprestimo.getJogoEmprestado().getNome(),
+	    																		dataFormatada
+    		);
+    		}
+
+    		System.out.printf("----------------------------------------%n");
+    	}
+    }
+    
 }

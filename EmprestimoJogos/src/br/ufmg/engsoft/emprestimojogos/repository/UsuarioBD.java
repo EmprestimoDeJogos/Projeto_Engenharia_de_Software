@@ -13,7 +13,8 @@ public class UsuarioBD {
         this.usuariosDB
                 .addAll(
                         List.of(
-                                new Usuario("admin@email.com", "Admin", "Todos", "admin")
+                                new Usuario("admin@email.com", "Admin", "Todos", "admin"),
+                                new Usuario("teste@email.com", "Eduardo", "", "123")
                         )
                 );
     }
