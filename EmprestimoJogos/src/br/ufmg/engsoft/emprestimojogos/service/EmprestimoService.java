@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import br.ufmg.engsoft.emprestimojogos.domain.*;
 import br.ufmg.engsoft.emprestimojogos.repository.EmprestimoBD;
+import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 import br.ufmg.engsoft.emprestimojogos.helper.*;
 
 public class EmprestimoService {
@@ -58,22 +59,22 @@ public class EmprestimoService {
 		emprestimoBD.cadastrarEmprestimo(new Emprestimo(dono, solicitante, jogoSolicitado, dataLimite));
 	}
 	
-	public List<Emprestimo> listarEmprestimosPorUsuario(Usuario solicitante) {
+	public List<Emprestimo> listarEmprestimosPorUsuario(Usuario usuarioLogado) {
 		
-		if(solicitante == null) {
+		if(usuarioLogado == null) {
 			
-			throw new InputMismatchException("Usuário solicitante não encontrado.");
+			throw new InputMismatchException("Usuário não encontrado.");
 			
-		} else if(solicitante.getEmail() == null || solicitante.getEmail() == "") {
+		} else if(usuarioLogado.getEmail() == null || usuarioLogado.getEmail() == "") {
 			
-			throw new InputMismatchException("Email de usuário solicitante do jogo faltante.");
+			throw new InputMismatchException("Email de usuário faltante.");
 			
 		}
 		
 		return this.emprestimoBD
 				   .getEmprestimos()
 				   .stream()
-				   .filter(emprestimo -> emprestimo.getSolicitante().getEmail() == solicitante.getEmail())
+				   .filter(emprestimo -> emprestimo.getSolicitante().getEmail().equals(usuarioLogado.getEmail()))
 				   .collect(Collectors.toList());
 	}
 	
@@ -86,5 +87,32 @@ public class EmprestimoService {
        }
        
 		return false;
+	}
+	
+	public void imprimirListagemDeEmprestimosPorUsuario(Usuario usuarioLogado, List<Emprestimo> emprestimosUsuario) {
+		
+		if(emprestimosUsuario.isEmpty()) {
+    		System.out.println("Você não possui nenhum empréstimo cadastrado!");
+    	}
+    	
+    	else {
+    		System.out.printf("-------------------------------------------------------%n");
+    		System.out.printf("|        Empréstimos cadastrados de %-18s|%n", usuarioLogado.getNome());
+    		System.out.printf("-------------------------------------------------------%n");
+    		System.out.printf("| %-15s | %-15s | %-15s |%n", "Dono", "Jogo solicitado", "Data limite");
+    		System.out.printf("-------------------------------------------------------%n");
+    		
+    		for(Emprestimo emprestimo : emprestimosUsuario) {
+    			
+    			String dataFormatada = Helper.formatarDataParaString(emprestimo.getDataLimite());
+    			
+		    	System.out.printf("| %-15s | %-15s | %-15s |%n", emprestimo.getDonoDoJogo().getNome(), 
+		    													 emprestimo.getJogoEmprestado().getNome(),
+		    													 dataFormatada
+	    		);
+    		}
+
+    		System.out.printf("-------------------------------------------------------%n");
+    	}
 	}
 }

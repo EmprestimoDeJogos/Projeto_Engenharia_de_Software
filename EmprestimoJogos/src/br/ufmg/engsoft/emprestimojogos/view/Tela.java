@@ -1,7 +1,5 @@
 package br.ufmg.engsoft.emprestimojogos.view;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +10,7 @@ import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 import br.ufmg.engsoft.emprestimojogos.domain.*;
 import br.ufmg.engsoft.emprestimojogos.helper.Helper;
 import br.ufmg.engsoft.emprestimojogos.repository.EmprestimoBD;
+import br.ufmg.engsoft.emprestimojogos.service.EmprestimoService;
 
 public class Tela {
 
@@ -105,47 +104,18 @@ public class Tela {
     
     public static void mostrarListagemEmprestimo() {
         mostraSeparadorDeTelas();
-        showEmprestimosUsuarioLogado();
+        mostrarEmprestimosUsuarioLogado();
         mostrarHomeLogado();
     }
     
-    private static void showEmprestimosUsuarioLogado() {
+    private static void mostrarEmprestimosUsuarioLogado() {
+    	
+    	EmprestimoService emprestimoService = new EmprestimoService();
     	
     	Usuario usuarioLogado = GerenciadorSessao.getSessao().getUsuarioLogado();
-    	
-    	List<Emprestimo> emprestimosGerais = EmprestimoBD.getInstance().getEmprestimos();
 
-    	List<Emprestimo> emprestimosUsuario = emprestimosGerais
-    										  .stream()
-    										  .filter(emprestimo -> emprestimo
-    												  				.getSolicitante()
-    												  				.getEmail()
-    												  				.equals(usuarioLogado.getEmail()))
-    										  .collect(Collectors.toList());
+    	List<Emprestimo> emprestimosUsuario = emprestimoService.listarEmprestimosPorUsuario(usuarioLogado);
     	
-    	if(emprestimosUsuario.isEmpty()) {
-    		System.out.println("Você não possui nenhum empréstimo cadastrado!");
-    	}
-    	
-    	else {
-    		System.out.printf("----------------------------------------%n");
-    		System.out.printf("| Empréstimos cadastrados de %10s|%n", usuarioLogado.getNome());
-    		System.out.printf("----------------------------------------%n");
-    		System.out.printf("| Dono | Jogo solicitado | Data limite |%n");
-    		System.out.printf("----------------------------------------%n");
-    		
-    		for(Emprestimo emprestimo : emprestimosUsuario) {
-    			
-    			String dataFormatada = Helper.formatarDataParaString(emprestimo.getDataLimite());
-    			
-		    	System.out.printf("| %-10s | %-10s | %-10s |%n", emprestimo.getDonoDoJogo().getNome(), 
-		    													 emprestimo.getJogoEmprestado().getNome(),
-		    													 dataFormatada
-	    		);
-    		}
-
-    		System.out.printf("----------------------------------------%n");
-    	}
-    }
-    
+    	emprestimoService.imprimirListagemDeEmprestimosPorUsuario(usuarioLogado, emprestimosUsuario);
+    } 
 }
