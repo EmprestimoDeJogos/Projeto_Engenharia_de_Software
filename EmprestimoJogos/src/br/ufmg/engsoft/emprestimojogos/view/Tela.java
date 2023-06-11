@@ -11,6 +11,7 @@ import br.ufmg.engsoft.emprestimojogos.domain.*;
 import br.ufmg.engsoft.emprestimojogos.helper.Helper;
 import br.ufmg.engsoft.emprestimojogos.repository.EmprestimoBD;
 import br.ufmg.engsoft.emprestimojogos.service.EmprestimoService;
+import br.ufmg.engsoft.emprestimojogos.service.JogoService;
 
 public class Tela {
 
@@ -95,6 +96,12 @@ public class Tela {
         mostrarHomeLogado();
     }
     
+    public static void mostrarListagemJogo() {
+        mostraSeparadorDeTelas();
+        mostrarJogosUsuarioLogado();
+        mostrarHomeLogado();
+    }
+    
     public static void mostrarCadastrarEmprestimo() {
         mostraSeparadorDeTelas();
         Controlador.handleCadastroEmprestimo();
@@ -108,6 +115,17 @@ public class Tela {
         mostrarHomeLogado();
     }
     
+	private static void mostrarJogosUsuarioLogado() {
+	    	
+	    JogoService jogoService = new JogoService();
+	    	
+	    Usuario usuarioLogado = GerenciadorSessao.getSessao().getUsuarioLogado();
+	
+	    List<Jogo> jogosUsuario = jogoService.listarJogosPorUsuario(usuarioLogado);
+	    	
+	    jogoService.imprimirListagemDeJogosPorUsuario(usuarioLogado, jogosUsuario);
+	    }
+    
     private static void mostrarEmprestimosUsuarioLogado() {
     	
     	EmprestimoService emprestimoService = new EmprestimoService();
@@ -117,5 +135,5 @@ public class Tela {
     	List<Emprestimo> emprestimosUsuario = emprestimoService.listarEmprestimosPorUsuario(usuarioLogado);
     	
     	emprestimoService.imprimirListagemDeEmprestimosPorUsuario(usuarioLogado, emprestimosUsuario);
-    } 
+    }
 }

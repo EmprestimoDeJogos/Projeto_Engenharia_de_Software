@@ -39,13 +39,15 @@ public class Controlador {
     public static void handleMenuHomeLogado() {
         int option = scanner.nextInt();
         		
-        if(option == 1){
+        if(option == 1) {
             Tela.mostrarCadastrarJogo();
-        } else if (option == 2) {
-        	Tela.mostrarCadastrarEmprestimo();
+        } else if(option == 2) {
+        	Tela.mostrarListagemJogo();
         } else if (option == 3) {
-        	Tela.mostrarListagemEmprestimo();
+        	Tela.mostrarCadastrarEmprestimo();
         } else if (option == 4) {
+        	Tela.mostrarListagemEmprestimo();
+        } else if (option == 5) {
         	System.exit(0);
         } else {
             Tela.mostrarErroLogado("Opção não reconhecida!");
