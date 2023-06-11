@@ -1,7 +1,9 @@
 package br.ufmg.engsoft.emprestimojogos.service;
 
 import br.ufmg.engsoft.emprestimojogos.domain.Usuario;
+import br.ufmg.engsoft.emprestimojogos.exceptions.UsuarioInexistenteException;
 import br.ufmg.engsoft.emprestimojogos.repository.UsuarioBD;
+import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -64,4 +66,36 @@ class UsuarioServiceTest {
 
         Assertions.assertEquals("Senha incorreta ou faltante", thrown.getMessage());
     }
+
+    @Test
+    void loginSucesso(){
+        String email = "teste@email.com";
+        String senha = "123";
+
+        Usuario usuarioExpected = usuarioBD.getUsuarios().stream().filter(usuario -> usuario.getEmail().equals(email)).findFirst().get();
+
+        usuarioService.fazerLogin(email, senha);
+
+        Usuario logado = GerenciadorSessao.getSessao().getUsuarioLogado();
+
+        Assertions.assertEquals(usuarioExpected.getNome(), logado.getNome());
+        Assertions.assertEquals(email, logado.getEmail());
+        Assertions.assertEquals(usuarioExpected.getInteresses(), logado.getInteresses());
+        Assertions.assertEquals(senha, logado.getSenha());
+    }
+
+    @Test
+    void loginErroThrowUsuarioInexistente(){
+        String email = "teste@email.com";
+        String senha = "errada";
+
+        UsuarioInexistenteException thrown = Assertions.assertThrows(
+                UsuarioInexistenteException.class, () -> usuarioService.fazerLogin(email, senha));
+
+        Usuario logado = GerenciadorSessao.getSessao().getUsuarioLogado();
+
+        Assertions.assertEquals("O e-mail e senha fornecidos não existem para nenhum usuário", thrown.getMessage());
+        Assertions.assertNull(logado);
+    }
+
 }

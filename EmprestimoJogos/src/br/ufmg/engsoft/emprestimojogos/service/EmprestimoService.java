@@ -1,7 +1,5 @@
 package br.ufmg.engsoft.emprestimojogos.service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -13,50 +11,44 @@ import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 import br.ufmg.engsoft.emprestimojogos.helper.*;
 
 public class EmprestimoService {
-	
+
+	public static final String linhaHifen = "-------------------------------------------------------%n";
 	private EmprestimoBD emprestimoBD;
+	private UsuarioService usuarioService;
+	private JogoService jogoService;
 	
 	public EmprestimoService() {
 		emprestimoBD = EmprestimoBD.getInstance();
+		usuarioService = new UsuarioService();
+		jogoService = new JogoService();
 	}
 	
-	public void cadastrarEmprestimo(Usuario dono, Usuario solicitante, Jogo jogoSolicitado, Date dataLimite) {
-		
-		if(dono == null) {
-			
-			 throw new InputMismatchException("Usuário dono do jogo não encontrado.");
-			 
-		} else if(dono.getEmail() == null || dono.getEmail() == "") {
-			
-			throw new InputMismatchException("Email de usuário dono do jogo faltante.");
-			
+	public void cadastrarEmprestimo(String emailDono, String nomeJogo, String stringDataLimite) {
+		if(stringDataLimite == null || stringDataLimite == ""){
+			throw new InputMismatchException("A data limite não pode ser vazia");
 		}
-		
-		if(solicitante == null) {
-			
-			 throw new InputMismatchException("Usuário solicitante não encontrado.");
-			 
-		} else if(solicitante.getEmail() == null || solicitante.getEmail() == "") {
-			
-			throw new InputMismatchException("Email de usuário solicitante do jogo faltante.");
-			
+
+		if(emailDono == null || emailDono == "") {
+			throw new InputMismatchException("Usuário dono do jogo não encontrado.");
 		}
-		
-		if(jogoSolicitado == null) {
-			
+
+		if(nomeJogo == null || nomeJogo == "") {
 			throw new InputMismatchException("Nenhum jogo foi selecionado.");
-			
-		}else if(jogoSolicitado.getPreco() < 0) {
-			
-			throw new InputMismatchException("Preco incorreto, não pode ser negativo.");
-			
 		}
-		
+
+		Date dataLimite = Helper.converterStringParaData(stringDataLimite);
+
 		if(dataLimite == null || !validarDataLimite(dataLimite)) {
 			throw new InputMismatchException("A data limite deve ser posterior à data atual.");
 		}
+
+		Usuario dono = usuarioService.getUsuarioPorEmail(emailDono);
+		Jogo jogoSolicitado = jogoService.getJogoPorNome(nomeJogo);
+
+		usuarioService.verificarSeUsuarioPossuiJogoSelecionado(nomeJogo, emailDono);
 		
-		emprestimoBD.cadastrarEmprestimo(new Emprestimo(dono, solicitante, jogoSolicitado, dataLimite));
+		emprestimoBD.cadastrarEmprestimo
+				(new Emprestimo(dono, GerenciadorSessao.getSessao().getUsuarioLogado(), jogoSolicitado, dataLimite));
 	}
 	
 	public List<Emprestimo> listarEmprestimosPorUsuario(Usuario usuarioLogado) {
@@ -75,18 +67,13 @@ public class EmprestimoService {
 				   .getEmprestimos()
 				   .stream()
 				   .filter(emprestimo -> emprestimo.getSolicitante().getEmail().equals(usuarioLogado.getEmail()))
-				   .collect(Collectors.toList());
+				   .toList();
 	}
 	
 	private static boolean validarDataLimite(Date dataLimite) {
-		
        Date hoje = Helper.getDataAtualSemHoras();
-       
-       if(hoje.compareTo(dataLimite) < 0) {
-    	   return true;
-       }
-       
-		return false;
+
+	   return hoje.compareTo(dataLimite) < 0;
 	}
 	
 	public void imprimirListagemDeEmprestimosPorUsuario(Usuario usuarioLogado, List<Emprestimo> emprestimosUsuario) {
@@ -96,11 +83,11 @@ public class EmprestimoService {
     	}
     	
     	else {
-    		System.out.printf("-------------------------------------------------------%n");
+    		System.out.printf(linhaHifen);
     		System.out.printf("|        Empréstimos cadastrados de %-18s|%n", usuarioLogado.getNome());
-    		System.out.printf("-------------------------------------------------------%n");
+    		System.out.printf(linhaHifen);
     		System.out.printf("| %-15s | %-15s | %-15s |%n", "Dono", "Jogo solicitado", "Data limite");
-    		System.out.printf("-------------------------------------------------------%n");
+    		System.out.printf(linhaHifen);
     		
     		for(Emprestimo emprestimo : emprestimosUsuario) {
     			

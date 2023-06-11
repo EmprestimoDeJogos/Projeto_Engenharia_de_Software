@@ -4,6 +4,7 @@ import br.ufmg.engsoft.emprestimojogos.domain.Jogo;
 import br.ufmg.engsoft.emprestimojogos.domain.Usuario;
 import br.ufmg.engsoft.emprestimojogos.repository.JogoBD;
 import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,12 +20,17 @@ class JogoServiceTest {
     private JogoBD jogoBD;
     private JogoService jogoService;
 
-    private String emailSessao = "teste@email.com";
+    private String emailSessao = "teste2@email.com";
     @BeforeEach
     void setUp() {
         jogoBD = JogoBD.getInstance();
         jogoService = new JogoService();
         GerenciadorSessao.getSessao().setUsuarioLogado(new Usuario(emailSessao, "Eduardo", "", "123"));
+    }
+
+    @AfterAll
+    static void tearDown(){
+        GerenciadorSessao.limparSessao();
     }
 
     @Test
@@ -67,4 +73,5 @@ class JogoServiceTest {
 
         Assertions.assertEquals("Preco incorreto, não pode ser negativo", thrown.getMessage());
     }
+
 }

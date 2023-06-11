@@ -1,7 +1,6 @@
 package br.ufmg.engsoft.emprestimojogos.controller;
 
-import br.ufmg.engsoft.emprestimojogos.domain.Usuario;
-import br.ufmg.engsoft.emprestimojogos.repository.UsuarioBD;
+import br.ufmg.engsoft.emprestimojogos.exceptions.UsuarioInexistenteException;
 import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 import br.ufmg.engsoft.emprestimojogos.view.Tela;
 
@@ -12,6 +11,8 @@ public class Controlador {
     private static Formulario formulario = new Formulario();
     static Scanner scanner = new Scanner(System.in);
 
+    private Controlador() {
+    }
 
     public static void handleMenuHome() {
         int option = scanner.nextInt();
@@ -46,8 +47,11 @@ public class Controlador {
         } else if (option == 3) {
         	Tela.mostrarCadastrarEmprestimo();
         } else if (option == 4) {
-        	Tela.mostrarListagemEmprestimo();
+            Tela.mostrarListagemEmprestimo();
         } else if (option == 5) {
+            GerenciadorSessao.limparSessao();
+            Tela.mostrarHome();
+        } else if (option == 6) {
         	System.exit(0);
         } else {
             Tela.mostrarErroLogado("Opção não reconhecida!");
@@ -71,11 +75,12 @@ public class Controlador {
     }
 
     public static void handleLogin() {
-        //Código temporário antes de ser feito a tarefa de login
-    	//Lucas - agora pegando usuário a partir do banco de dados mockado (temporário tbm)
-    	
-    	Usuario usuario = UsuarioBD.getInstance().getUsuarios().get(1);
-        GerenciadorSessao.getSessao().setUsuarioLogado(usuario);
+        try {
+            formulario.formLogin();
+        } catch (UsuarioInexistenteException ex){
+            Tela.mostrarErroNaoLogado(ex.getMessage());
+        }
+
         Tela.mostrarHomeLogado();
     }
 }
