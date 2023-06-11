@@ -10,6 +10,7 @@ import br.ufmg.engsoft.emprestimojogos.constants.OpcoesMenu;
 import br.ufmg.engsoft.emprestimojogos.controller.Controlador;
 import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 import br.ufmg.engsoft.emprestimojogos.domain.*;
+import br.ufmg.engsoft.emprestimojogos.helper.Helper;
 import br.ufmg.engsoft.emprestimojogos.repository.EmprestimoBD;
 
 public class Tela {
@@ -91,12 +92,14 @@ public class Tela {
     public static void mostrarCadastrarJogo() {
         mostraSeparadorDeTelas();
         Controlador.handleCadastroJogo();
+        System.out.println("Cadastro de jogo realizado com sucesso.");
         mostrarHomeLogado();
     }
     
     public static void mostrarCadastrarEmprestimo() {
         mostraSeparadorDeTelas();
         Controlador.handleCadastroEmprestimo();
+        System.out.println("Cadastro de empréstimo realizado com sucesso.");
         mostrarHomeLogado();
     }
     
@@ -133,15 +136,12 @@ public class Tela {
     		
     		for(Emprestimo emprestimo : emprestimosUsuario) {
     			
-    			String dataFormatada = "";
-    				
-    			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-    			dataFormatada = formatter.format(emprestimo.getDataLimite());	
+    			String dataFormatada = Helper.formatarDataParaString(emprestimo.getDataLimite());
     			
-	    	System.out.printf("| %-10s | %-10s | %-10s |%n", emprestimo.getDonoDoJogo().getNome(), 
-	    																		emprestimo.getJogoEmprestado().getNome(),
-	    																		dataFormatada
-    		);
+		    	System.out.printf("| %-10s | %-10s | %-10s |%n", emprestimo.getDonoDoJogo().getNome(), 
+		    													 emprestimo.getJogoEmprestado().getNome(),
+		    													 dataFormatada
+	    		);
     		}
 
     		System.out.printf("----------------------------------------%n");

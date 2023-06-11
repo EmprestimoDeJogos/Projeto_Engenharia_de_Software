@@ -5,6 +5,7 @@ import br.ufmg.engsoft.emprestimojogos.service.*;
 import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 import br.ufmg.engsoft.emprestimojogos.repository.*;
 import br.ufmg.engsoft.emprestimojogos.domain.*;
+import br.ufmg.engsoft.emprestimojogos.helper.Helper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,71 +64,12 @@ public class Formulario {
     	System.out.println("Data limite proposta: ");
     	String stringDataLimite = scanner.nextLine();
     	
-    	Usuario dono = getUsuarioPorEmail(emailDono);
-    	Jogo jogo = getJogoPorNome(nomeJogo);
+    	Usuario dono = usuarioService.getUsuarioPorEmail(emailDono);
+    	Jogo jogo = jogoService.getJogoPorNome(nomeJogo);
+    	Date dataLimite = Helper.converterStringParaData(stringDataLimite);
     	
-    	verificarSeUsuarioPossuiJogoSelecionado(nomeJogo, emailDono);
-    	
-    	Date dataLimite = converterStringParaData(stringDataLimite);
+    	usuarioService.verificarSeUsuarioPossuiJogoSelecionado(nomeJogo, emailDono);
     	
     	emprestimoService.cadastrarEmprestimo(dono, GerenciadorSessao.getSessao().getUsuarioLogado(), jogo, dataLimite);
-    }
-    
-    private static Usuario getUsuarioPorEmail(String email) {
-    	List<Usuario> usuarios = UsuarioBD.getInstance().getUsuarios();
-    	usuarios = usuarios.stream()
-				.filter(usuario -> usuario.getEmail().equals(email))
-				.collect(Collectors.toList());
-    	
-    	if(usuarios.isEmpty()) {
-    		throw new InputMismatchException("Usuário não encontrado.");
-    	}
-    	
-    	return usuarios.get(0);
-    	
-    }
-    
-    private static Jogo getJogoPorNome(String nome) {
-    	List<Jogo> jogos = JogoBD.getInstance().getJogos();
-    	jogos = jogos.stream()
-				.filter(jogo -> jogo.getNome().equals(nome))
-				.collect(Collectors.toList());
-    	
-    	if(jogos.isEmpty()) {
-    		throw new InputMismatchException("Jogo não encontrado.");
-    	}
-    	
-    	return jogos.get(0);
-    }
-    
-    private static void verificarSeUsuarioPossuiJogoSelecionado(String nome, String email) {
-    	List<Jogo> usuarioJogo = JogoBD.getInstance().getJogos();
-    	usuarioJogo = usuarioJogo.stream()
-    				.filter(jogo -> jogo.getNome().equals(nome) && jogo.getEmailDono().equals(email))
-    				.collect(Collectors.toList());
-    	
-    	if(usuarioJogo.isEmpty()) {
-    		throw new InputMismatchException("Este usuário não possui o jogo em questão.");
-    	}
-    }
-    
-    private static Date converterStringParaData(String dateString) {
-    	
-    	try {
-    		
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            Date dataLimite = formatter.parse(dateString);
-            
-            if(dataLimite == null) {
-            	throw new InputMismatchException("Data inválida");
-            }
-            
-            return dataLimite;
-            
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    	
-    	return null;
     }
 }

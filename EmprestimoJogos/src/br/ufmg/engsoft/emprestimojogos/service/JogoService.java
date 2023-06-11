@@ -5,6 +5,8 @@ import br.ufmg.engsoft.emprestimojogos.repository.JogoBD;
 import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class JogoService {
     private JogoBD jogoBD;
@@ -28,5 +30,18 @@ public class JogoService {
 
         jogoBD.cadastrarJogo
                 (new Jogo(nome, descricao, preco, GerenciadorSessao.getSessao().getUsuarioLogado().getEmail()));
+    }
+    
+    public Jogo getJogoPorNome(String nome) {
+    	List<Jogo> jogos = JogoBD.getInstance().getJogos();
+    	jogos = jogos.stream()
+				.filter(jogo -> jogo.getNome().equals(nome))
+				.collect(Collectors.toList());
+    	
+    	if(jogos.isEmpty()) {
+    		throw new InputMismatchException("Jogo não encontrado.");
+    	}
+    	
+    	return jogos.get(0);
     }
 }

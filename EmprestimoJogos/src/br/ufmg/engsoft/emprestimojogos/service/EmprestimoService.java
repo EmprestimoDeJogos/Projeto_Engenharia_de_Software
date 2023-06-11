@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import br.ufmg.engsoft.emprestimojogos.domain.*;
 import br.ufmg.engsoft.emprestimojogos.repository.EmprestimoBD;
+import br.ufmg.engsoft.emprestimojogos.helper.*;
 
 public class EmprestimoService {
 	
@@ -46,11 +47,11 @@ public class EmprestimoService {
 			
 		}else if(jogoSolicitado.getPreco() < 0) {
 			
-			throw new InputMismatchException("Preco incorreto, não pode ser negativo");
+			throw new InputMismatchException("Preco incorreto, não pode ser negativo.");
 			
 		}
 		
-		if(!validarDataLimite(dataLimite) || dataLimite == null) {
+		if(dataLimite == null || !validarDataLimite(dataLimite)) {
 			throw new InputMismatchException("A data limite deve ser posterior à data atual.");
 		}
 		
@@ -78,20 +79,12 @@ public class EmprestimoService {
 	
 	private static boolean validarDataLimite(Date dataLimite) {
 		
-		try {
-			
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-           
-            Date hoje = formatter.parse(formatter.format(new Date()));
-            
-            if(hoje.compareTo(dataLimite) < 0) {
-            	return true;
-            }
-            
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-		
+       Date hoje = Helper.getDataAtualSemHoras();
+       
+       if(hoje.compareTo(dataLimite) < 0) {
+    	   return true;
+       }
+       
 		return false;
 	}
 }

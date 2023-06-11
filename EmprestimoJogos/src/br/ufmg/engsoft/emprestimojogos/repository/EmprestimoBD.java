@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import br.ufmg.engsoft.emprestimojogos.domain.*;
+import br.ufmg.engsoft.emprestimojogos.helper.Helper;
 import br.ufmg.engsoft.emprestimojogos.repository.*;
 import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 
@@ -19,7 +20,7 @@ public class EmprestimoBD {
 		List<Jogo> jogos = JogoBD.getInstance().getJogos();
 		Usuario dono = UsuarioBD.getInstance().getUsuarios().get(0);
 		Usuario solicitante = null;
-		Date dataLimite = null;
+		Date dataLimite = Helper.parsearData("01/07/2023");
 		Usuario usuarioLogado = GerenciadorSessao.getSessao().getUsuarioLogado();
 		
 		if(usuarioLogado != null) {
@@ -27,14 +28,6 @@ public class EmprestimoBD {
 		} else {
 			solicitante = UsuarioBD.getInstance().getUsuarios().get(1);
 		}
-		
-		
-		try {
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            dataLimite = formatter.parse("01/07/2023");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
 		
 		this.emprestimosDB.addAll(List.of(
 											new Emprestimo(dono, solicitante, jogos.get(0), dataLimite)
