@@ -10,26 +10,27 @@ import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 import br.ufmg.engsoft.emprestimojogos.domain.*;
 import br.ufmg.engsoft.emprestimojogos.helper.Helper;
 import br.ufmg.engsoft.emprestimojogos.repository.EmprestimoBD;
+import br.ufmg.engsoft.emprestimojogos.repository.JogoBD;
 import br.ufmg.engsoft.emprestimojogos.service.EmprestimoService;
 import br.ufmg.engsoft.emprestimojogos.service.JogoService;
 
 public class Tela {
 
-    private static void printMenu(String[] options){
-        for (String option : options){
+    private static void printMenu(String[] options) {
+        for (String option : options) {
             System.out.println(option);
         }
         System.out.print("Escolha sua opcão: ");
         System.out.println();
     }
 
-    private static void mostrarErro(String erro){
+    private static void mostrarErro(String erro) {
         System.out.println(
                 CoresConsole.RED +
-                "Erro: " + erro +
-                CoresConsole.RESET
-        );
+                        "Erro: " + erro +
+                        CoresConsole.RESET);
     }
+
     public static void mostrarLogin() {
         Controlador.handleLogin();
     }
@@ -39,41 +40,42 @@ public class Tela {
         Controlador.handleCadastro();
     }
 
-    public static void mostraSeparadorDeTelas(){
+    public static void mostraSeparadorDeTelas() {
         System.out.println();
         System.out.println(
                 CoresConsole.CYAN_BOLD +
-                "---------------------------------------------------------------------------------------------" +
-                CoresConsole.RESET
-        );
+                        "---------------------------------------------------------------------------------------------"
+                        +
+                        CoresConsole.RESET);
         System.out.println();
     }
-    public static void mostrarHomeLogado(){
+
+    public static void mostrarHomeLogado() {
         mostraSeparadorDeTelas();
         String nomeUsuario = GerenciadorSessao.getSessao().getUsuarioLogado().getNome();
 
         System.out.println(
                 String.format(
-                    CoresConsole.PURPLE +
-                    "-----------------  BEM-VINDO(A) %s AO SISTEMA DE EMPRESTIMO DE JOGOS -----------------" +
-                    CoresConsole.RESET, nomeUsuario)
-        );
+                        CoresConsole.PURPLE +
+                                "-----------------  BEM-VINDO(A) %s AO SISTEMA DE EMPRESTIMO DE JOGOS -----------------"
+                                +
+                                CoresConsole.RESET,
+                        nomeUsuario));
 
         printMenu(OpcoesMenu.HOME_LOGADO);
         Controlador.handleMenuHomeLogado();
     }
+
     public static void mostrarHome() {
         mostraSeparadorDeTelas();
         System.out.println(
                 CoresConsole.BLUE +
-                "-----------------  BEM-VINDO AO SISTEMA DE EMPRESTIMO DE JOGOS -----------------" +
-                CoresConsole.RESET
-        );
+                        "-----------------  BEM-VINDO AO SISTEMA DE EMPRESTIMO DE JOGOS -----------------" +
+                        CoresConsole.RESET);
         System.out.println(
                 CoresConsole.BLUE +
                         "O que deseja fazer?" +
-                        CoresConsole.RESET
-        );
+                        CoresConsole.RESET);
 
         printMenu(OpcoesMenu.HOME);
         Controlador.handleMenuHome();
@@ -95,45 +97,69 @@ public class Tela {
         System.out.println("Cadastro de jogo realizado com sucesso.");
         mostrarHomeLogado();
     }
-    
+
     public static void mostrarListagemJogo() {
         mostraSeparadorDeTelas();
         mostrarJogosUsuarioLogado();
         mostrarHomeLogado();
     }
-    
+
     public static void mostrarCadastrarEmprestimo() {
         mostraSeparadorDeTelas();
         Controlador.handleCadastroEmprestimo();
         System.out.println("Cadastro de empréstimo realizado com sucesso.");
         mostrarHomeLogado();
     }
-    
+
     public static void mostrarListagemEmprestimo() {
         mostraSeparadorDeTelas();
         mostrarEmprestimosUsuarioLogado();
         mostrarHomeLogado();
     }
-    
-	private static void mostrarJogosUsuarioLogado() {
-	    	
-	    JogoService jogoService = new JogoService();
-	    	
-	    Usuario usuarioLogado = GerenciadorSessao.getSessao().getUsuarioLogado();
-	
-	    List<Jogo> jogosUsuario = jogoService.listarJogosPorUsuario(usuarioLogado);
-	    	
-	    jogoService.imprimirListagemDeJogosPorUsuario(usuarioLogado, jogosUsuario);
-	    }
-    
-    private static void mostrarEmprestimosUsuarioLogado() {
-    	
-    	EmprestimoService emprestimoService = new EmprestimoService();
-    	
-    	Usuario usuarioLogado = GerenciadorSessao.getSessao().getUsuarioLogado();
 
-    	List<Emprestimo> emprestimosUsuario = emprestimoService.listarEmprestimosPorUsuario(usuarioLogado);
-    	
-    	emprestimoService.imprimirListagemDeEmprestimosPorUsuario(usuarioLogado, emprestimosUsuario);
+    public static void mostrarJogosDisponiveis() {
+        mostraSeparadorDeTelas();
+
+        mostrarJogosDisponiveisLogado();
+        mostrarHomeLogado();
+    }
+
+    public static void pesquisaJogosDisponiveis() {
+        mostraSeparadorDeTelas();
+        pesquisarJogosDisponiveis();
+        mostrarHomeLogado();
+    }
+
+    private static void mostrarJogosUsuarioLogado() {
+
+        JogoService jogoService = new JogoService();
+
+        Usuario usuarioLogado = GerenciadorSessao.getSessao().getUsuarioLogado();
+
+        List<Jogo> jogosUsuario = jogoService.listarJogosPorUsuario(usuarioLogado);
+
+        jogoService.imprimirListagemDeJogosPorUsuario(usuarioLogado, jogosUsuario);
+    }
+
+    private static void mostrarEmprestimosUsuarioLogado() {
+
+        EmprestimoService emprestimoService = new EmprestimoService();
+
+        Usuario usuarioLogado = GerenciadorSessao.getSessao().getUsuarioLogado();
+
+        List<Emprestimo> emprestimosUsuario = emprestimoService.listarEmprestimosPorUsuario(usuarioLogado);
+
+        emprestimoService.imprimirListagemDeEmprestimosPorUsuario(usuarioLogado, emprestimosUsuario);
+    }
+
+    private static void mostrarJogosDisponiveisLogado() {
+        JogoBD jogoBD = JogoBD.getInstance();
+        jogoBD.imprimeJogos();
+
+    }
+
+    private static void pesquisarJogosDisponiveis() {
+        JogoBD jogoBD = JogoBD.getInstance();
+        jogoBD.procurarJogo(Helper.pesquisarJogoTerminal());
     }
 }

@@ -11,43 +11,41 @@ import br.ufmg.engsoft.emprestimojogos.repository.*;
 import br.ufmg.engsoft.emprestimojogos.session.GerenciadorSessao;
 
 public class EmprestimoBD {
-	
+
 	private static EmprestimoBD instance;
 	private List<Emprestimo> emprestimosDB = new ArrayList<Emprestimo>();
-	
+
 	private EmprestimoBD() {
-		
+
 		List<Jogo> jogos = JogoBD.getInstance().getJogos();
 		Usuario dono = UsuarioBD.getInstance().getUsuarios().get(0);
 		Usuario solicitante = null;
 		Date dataLimite = Helper.parsearData("01/07/2023");
 		Usuario usuarioLogado = GerenciadorSessao.getSessao().getUsuarioLogado();
-		
-		if(usuarioLogado != null) {
+
+		if (usuarioLogado != null) {
 			solicitante = usuarioLogado;
 		} else {
 			solicitante = UsuarioBD.getInstance().getUsuarios().get(1);
 		}
-		
-		this.emprestimosDB.addAll(List.of(
-											new Emprestimo(dono, solicitante, jogos.get(0), dataLimite)
-										)
-								);
-	}
-	
-	public static EmprestimoBD getInstance() {
-        if (instance == null) {
-            instance = new EmprestimoBD();
-        }
-        return instance;
-    }
-	
-	public void cadastrarEmprestimo(Emprestimo emprestimo){
-		emprestimosDB.add(emprestimo);
-    }
 
-    public List<Emprestimo> getEmprestimos(){
-        return emprestimosDB;
-    }
-	
+		this.emprestimosDB.addAll(List.of(
+				new Emprestimo(dono, solicitante, jogos.get(0), dataLimite)));
+	}
+
+	public static EmprestimoBD getInstance() {
+		if (instance == null) {
+			instance = new EmprestimoBD();
+		}
+		return instance;
+	}
+
+	public void cadastrarEmprestimo(Emprestimo emprestimo) {
+		emprestimosDB.add(emprestimo);
+	}
+
+	public List<Emprestimo> getEmprestimos() {
+		return emprestimosDB;
+	}
+
 }

@@ -19,12 +19,12 @@ public class Controlador {
 
         Tela.mostraSeparadorDeTelas();
 
-        if(option == 1){
+        if (option == 1) {
             Tela.mostrarCadastro();
-        } else if(option == 2) {
+        } else if (option == 2) {
             Tela.mostrarLogin();
         } else {
-        	System.exit(0);
+            System.exit(0);
         }
     }
 
@@ -39,20 +39,24 @@ public class Controlador {
 
     public static void handleMenuHomeLogado() {
         int option = scanner.nextInt();
-        		
-        if(option == 1) {
+
+        if (option == 1) {
             Tela.mostrarCadastrarJogo();
-        } else if(option == 2) {
-        	Tela.mostrarListagemJogo();
+        } else if (option == 2) {
+            Tela.mostrarListagemJogo();
         } else if (option == 3) {
-        	Tela.mostrarCadastrarEmprestimo();
+            Tela.mostrarCadastrarEmprestimo();
         } else if (option == 4) {
             Tela.mostrarListagemEmprestimo();
         } else if (option == 5) {
+            Tela.mostrarJogosDisponiveis();
+        } else if (option == 6) {
+            Tela.pesquisaJogosDisponiveis();
+        } else if (option == 7) {
             GerenciadorSessao.limparSessao();
             Tela.mostrarHome();
-        } else if (option == 6) {
-        	System.exit(0);
+        } else if (option == 8) {
+            System.exit(0);
         } else {
             Tela.mostrarErroLogado("Opção não reconhecida!");
         }
@@ -61,15 +65,15 @@ public class Controlador {
     public static void handleCadastroJogo() {
         try {
             formulario.formCadastroJogo();
-        } catch (InputMismatchException ex){
+        } catch (InputMismatchException ex) {
             Tela.mostrarErroLogado(ex.getMessage());
         }
     }
-    
+
     public static void handleCadastroEmprestimo() {
         try {
             formulario.formCadastroEmprestimo();
-        } catch (InputMismatchException ex){
+        } catch (InputMismatchException ex) {
             Tela.mostrarErroLogado(ex.getMessage());
         }
     }
@@ -77,7 +81,7 @@ public class Controlador {
     public static void handleLogin() {
         try {
             formulario.formLogin();
-        } catch (UsuarioInexistenteException ex){
+        } catch (UsuarioInexistenteException ex) {
             Tela.mostrarErroNaoLogado(ex.getMessage());
         }
 
